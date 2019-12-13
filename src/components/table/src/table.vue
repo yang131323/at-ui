@@ -225,6 +225,7 @@ export default {
     },
     allData () {
       this.total = this.allData.length
+      this.objData = this.makeObjData()
     },
     sortData () {
       this.handleResize()
