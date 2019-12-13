@@ -115,8 +115,24 @@ export default {
         name: this.activeKey
       })
       this.$nextTick(() => {
-        this.scrollToActiveTab()
+        this.scrollToActiveTab();
       })
+    },
+    value (newVal, oldVal) {
+      if (!newVal || newVal === this.activeKey) { return; } // 就是为了触发activeKey的侦听器
+      let index = -1;
+      for (let i = 0, len = this.navList.length; i < len; i++) {
+        if (newVal === this.navList[i].name) {
+          index = i;
+          break;
+        }
+      }
+      if (index !== -1 && !this.navList[index].disabled) {
+        this.activeKey = newVal;
+        if (!this.animated) {
+          this.switchTabsWithNoAnimated()
+        }
+      }
     }
   },
   computed: {

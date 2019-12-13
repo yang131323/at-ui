@@ -6934,6 +6934,24 @@ exports.default = {
       this.$nextTick(function () {
         _this.scrollToActiveTab();
       });
+    },
+    value: function value(newVal, oldVal) {
+      if (!newVal || newVal === this.activeKey) {
+        return;
+      }
+      var index = -1;
+      for (var i = 0, len = this.navList.length; i < len; i++) {
+        if (newVal === this.navList[i].name) {
+          index = i;
+          break;
+        }
+      }
+      if (index !== -1 && !this.navList[index].disabled) {
+        this.activeKey = newVal;
+        if (!this.animated) {
+          this.switchTabsWithNoAnimated();
+        }
+      }
     }
   },
   computed: {
