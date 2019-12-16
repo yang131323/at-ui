@@ -70,7 +70,10 @@ export default {
   watch: {
     value (value) {
       this.updateModel()
-    }
+    },
+    checked (value) {
+      this.currentValue = value
+    },
   },
   methods: {
     updateModel () {

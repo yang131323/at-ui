@@ -109,6 +109,17 @@ export default {
     }
   },
   watch: {
+    value (val) {
+      this.activeKey = val;
+      this.$emit('on-change', {
+        index: this.activeIndex,
+        name: this.activeKey
+      })
+      this.$nextTick(() => {
+        this.scrollToActiveTab()
+      })
+      this.setNavByIndex(this.activeIndex);
+    },
     activeKey () {
       this.$emit('on-change', {
         index: this.activeIndex,

@@ -94,7 +94,7 @@
             <template v-for="(item, index) in sortData">
               <tr>
                 <td v-if="optional" class="at-table__cell at-table__column-selection">
-                  <at-checkbox v-model="objData[index].isChecked" @on-change="changeRowSelection"></at-checkbox>
+                  <at-checkbox v-model="objData[index].isChecked" :disabled="objData[index].isDisabled" @on-change="changeRowSelection"></at-checkbox>
                 </td>
                 <td v-for="(column, cindex) in columns" class="at-table__cell">
                   <template v-if="column.render">
@@ -225,7 +225,7 @@ export default {
     },
     allData () {
       this.total = this.allData.length
-      this.objData = this.makeObjData()
+      this.objData = this.makeObjData() // 增加该段代码
     },
     sortData () {
       this.handleResize()
@@ -256,7 +256,7 @@ export default {
         isAll = false
       }
       for (let i = 0, len = this.sortData.length; i < len; i++) {
-        if (!this.objData[this.sortData[i].index].isChecked) {
+        if (!this.objData[this.sortData[i].index].isChecked && !this.objData[this.sortData[i].index].isDisabled) {
           isAll = false
           break
         }
@@ -322,6 +322,7 @@ export default {
         const newRow = deepCopy(row)
 
         newRow.isChecked = !!newRow.isChecked
+        newRow.isDisabled = !!newRow.isDisabled
 
         rowData[index] = newRow
       })
@@ -374,7 +375,9 @@ export default {
       const status = !this.isSelectAll
 
       for (const data of this.sortData) {
-        this.objData[data.index].isChecked = status
+        if(!this.objData[data.index].isDisabled){
+          this.objData[data.index].isChecked = status
+        }
       }
 
       const selection = this.getSelection()
@@ -423,7 +426,7 @@ export default {
     getSelection () {
       const selectionIndexArray = []
       for (const i in this.objData) {
-        if (this.objData[i].isChecked) {
+        if (this.objData[i].isChecked && !this.objData[i].isDisabled) {
           selectionIndexArray.push(i | 0)
         }
       }

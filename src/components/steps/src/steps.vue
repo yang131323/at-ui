@@ -18,6 +18,11 @@ export default {
       default: 0,
       validator: val => val >= 0
     },
+    realcurrent: {
+      type: Number,
+      default: 0,
+      validator: val => val >= 0
+    },
     status: {
       type: String,
       default: 'process',
@@ -42,11 +47,14 @@ export default {
   methods: {
     updateStepsStatus () {
       const current = this.current
-      const status = this.status
+      const realcurrent = this.realcurrent
+      let status = this.status
 
       this.steps.forEach((child, index) => {
         const prevChild = this.steps[index - 1]
-
+        if(typeof status == 'undefined'){
+          status = child.status;
+        }
         if (index === current) {
           if (status === 'error') {
             child.internalStatus = 'error'
@@ -54,7 +62,7 @@ export default {
           } else {
             child.internalStatus = 'process'
           }
-        } else if (index < current) {
+        } else if (index < current && index <= realcurrent) {
           child.internalStatus = 'finish'
         } else {
           child.internalStatus = 'wait'
