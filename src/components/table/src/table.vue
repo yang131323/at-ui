@@ -32,8 +32,14 @@
                 :style="{
                   cursor: column.sortType ? 'pointer' : 'text'
                 }"
+                :key="column._index"
                 @click="column.sortType && handleSort(index)">
-                {{ column.title }}
+                <template v-if="column.titleRender">
+                  <Cell :items="sortData" :render="column.titleRender" :index="-1" :column="column"></Cell>
+                </template>
+                <template v-else>
+                  {{ column.title }}
+                </template>
                 <template v-if="column.sortType">
                   <div class="at-table__column-sorter"
                     :class="{
@@ -73,8 +79,14 @@
                 :style="{
                   cursor: column.sortType ? 'pointer' : 'text'
                 }"
+                :key="column._index"
                 @click="column.sortType && handleSort(index)">
-                {{ column.title }}
+                <template v-if="column.titleRender">
+                  <Cell :items="sortData" :render="column.titleRender" :index="-1" :column="column"></Cell>
+                </template>
+                <template v-else>
+                  {{ column.title }}
+                </template>
                 <template v-if="column.sortType">
                   <div class="at-table__column-sorter"
                     :class="{
@@ -210,8 +222,8 @@ export default {
     return {
       objData: this.makeObjData(), // use for checkbox to select all
       sortData: [], // use for sort or paginate
-      allData: [],
-      columnsData: this.makeColumns(),
+      allData: [], // is sort data（copy）
+      columnsData: this.makeColumns(), // is columns copy
       total: 0,
       bodyHeight: 0,
       pageCurSize: this.pageSize,
@@ -295,6 +307,9 @@ export default {
         this.bodyHeight = 0
       }
     },
+    /**
+     * 深拷贝表格标题格式并为每列元素添加_index/_sortType内部属性
+     */
     makeColumns () {
       const columns = deepCopy(this.columns)
       columns.forEach((column, idx) => {
@@ -308,6 +323,9 @@ export default {
       })
       return columns
     },
+    /**
+     * 克隆传入数据并添加index
+     */
     makeData () {
       const data = deepCopy(this.data)
       data.forEach((row, idx) => {
@@ -329,6 +347,9 @@ export default {
 
       return rowData
     },
+    /**
+     * 将源数据进行排序和分页
+     */
     makeDataWithSortAndPage (pageNum) {
       let data = []
       let allData = []
@@ -339,6 +360,10 @@ export default {
       data = this.makeDataWithPaginate(pageNum)
       return data
     },
+    /**
+     * 将数据进行分页处理
+     * @param {Number} 页码
+     */
     makeDataWithPaginate (page) {
       page = page || 1
       const pageStart = (page - 1) * this.pageCurSize
@@ -352,6 +377,9 @@ export default {
       }
       return pageData
     },
+    /**
+     * 根据第一列不为normal排序类型将data进行排序
+     */
     makeDataWithSort () {
       let data = this.makeData()
       let sortType = 'normal'
@@ -411,6 +439,12 @@ export default {
         key
       })
     },
+    /**
+     * 根据指定排序方式将源数据进行排序
+     * @param {Array} data 需要排序的数据
+     * @param {String} type 排序类型
+     * @param {Number} index 某一列
+     */
     sort (data, type, index) {
       const key = this.columnsData[index].key
       data.sort((a, b) => {
